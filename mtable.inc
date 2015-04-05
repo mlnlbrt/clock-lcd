@@ -1,17 +1,21 @@
 ;
-; ********************************************
-; * MLN CLK				                     *
-; ********************************************
-; * Plik z definicja godzin					 *
-; * zawiera 4 tablice 60-cio elementowe, po  *
-; * jednej dla kazdego portu. 				 *
-; * Kazdy kolejny element tablicy oznacza 	 *
-; * kolejna cyfre (dla wyswietlania minut).  *
-; * Cyfry 00-59								 *
-; ********************************************
-; * 31.01.2013 r.							 *
-; * (C)2013 by Albert Malina 			     *
-; ********************************************
+; ***********************************************
+; * MLN CLK				     	*
+; ***********************************************
+; * File with definitions of MCU-to-LCD		*
+; * connections.				*
+; * Includes 4 arrays of 60 elements, one for	*
+; * each I/O port.				*
+; * Each array element is assigned		*
+; * to one number (for displaying minutes).	*
+; * The numbers are displayed as follows:	*
+; * Numbers 0 - 59				*
+; ***********************************************
+; * V1: 31.01.2013 (THT version)		*
+; * V2: 18.05.2013 (SMD version)		*
+; * V3: 06.04.2015 (MK2, translated to eng)	*
+; * (C) 2013, 2015 by Albert Malina 		*
+; ***********************************************
 ;
 m_A: 
 .DB 0b01110000, 0b01110000, 0b01110000, 0b01110000
@@ -80,5 +84,5 @@ m_D:
 .DB 0b11100000, 0b11100000, 0b11100000, 0b11100000
 .DB 0b11100000, 0b11100000, 0b11100000, 0b11100000
 ;
-; Koniec mtable.inc
+; EOF mtable.inc
 ;

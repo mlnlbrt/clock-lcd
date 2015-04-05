@@ -1,22 +1,23 @@
 ;
-; ********************************************
-; * MLN CLK				                     *
-; ********************************************
-; * Plik z definicja godzin					 *
-; * zawiera 4 tablice 24-sto elementowe, po  *
-; * jednej dla kazdego portu. 				 *
-; * Kazdy kolejny element tablicy oznacza 	 *
-; * kolejna cyfre (dla wyswietlania godzin). *
-; * Godziny (czyli jednoczesnie elementy     *
-; * tablic) wyswietlane sa nastepujaco:		 *
-; * 0,1,2,3,4,5,6,7,8,9,10,11,12, 			 *
-; * 1,2,3,4,5,6,7,8,9,10,11.				 *
-; * Cyfry 0 - 12							 *
-; ********************************************
-; * V1: 31.01.2013 r. (wersja THT)			 *
-; * V2: 18.05.2013 r. (wersja SMD)			 *
-; * (C)2013 by Albert Malina 			     *
-; ********************************************
+; ***********************************************
+; * MLN CLK				     	*
+; ***********************************************
+; * File with definitions of MCU-to-LCD		*
+; * connections.				*
+; * Includes 4 arrays of 24 elements, one for	*
+; * each I/O port.				*
+; * Each array element is assigned		*
+; * to one number (for displaying hours).	*
+; * The numbers are displayed as follows:	*
+; * 0,1,2,3,4,5,6,7,8,9,10,11,12, 		*
+; * 1,2,3,4,5,6,7,8,9,10,11.			*
+; * Numbers 0 - 12				*
+; ***********************************************
+; * V1: 31.01.2013 (THT version)		*
+; * V2: 18.05.2013 (SMD version)		*
+; * V3: 06.04.2015 (MK2, translated to eng)	*
+; * (C) 2013, 2015 by Albert Malina 		*
+; ***********************************************
 ;
 h_A: 
 .DB 0b00000111, 0b00000100, 0b00000011, 0b00000110
@@ -50,5 +51,5 @@ h_D:
 .DB 0b00001011, 0b00000111, 0b00000111, 0b00001100
 .DB 0b00001111, 0b00001111, 0b00001110, 0b00001000
 ;
-; Koniec htable.inc
+; EOF htable.inc
 ;
