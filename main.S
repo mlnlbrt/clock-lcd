@@ -339,59 +339,59 @@ UPDATE_DIGITS:
 	ldi	RMP2,	0b00000000
 ;	wczytywanie bajtow definiujacych cyfry do rejestrow tymczasowych
 ;	najpierw minuty
-	ldi	ZH,		HIGH(m_D * 2)
-	ldi	ZL, 	LOW	(m_D * 2)
-	add	ZL,		TIME_M
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(m_D * 2)
+	ldi	ZL, 	LOW(m_D * 2)
+	add	ZL,	TIME_M
+	adc	ZH,	RMP2
 	lpm
 	mov	TPORTD,	R0
 ;
-	ldi	ZH,		HIGH(m_C * 2)
-	ldi	ZL, 	LOW	(m_C * 2)
-	add	ZL,		TIME_M
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(m_C * 2)
+	ldi	ZL, 	LOW(m_C * 2)
+	add	ZL,	TIME_M
+	adc	ZH,	RMP2
 	lpm
 	mov	TPORTC,	R0
 ;
-	ldi	ZH,		HIGH(m_B * 2)
-	ldi	ZL, 	LOW	(m_B * 2)
-	add	ZL,		TIME_M
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(m_B * 2)
+	ldi	ZL, 	LOW(m_B * 2)
+	add	ZL,	TIME_M
+	adc	ZH,	RMP2
 	lpm
 	mov	TPORTB,	R0
 ;
-	ldi	ZH,		HIGH(m_A * 2)
-	ldi	ZL, 	LOW	(m_A * 2)
-	add	ZL,		TIME_M
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(m_A * 2)
+	ldi	ZL, 	LOW(m_A * 2)
+	add	ZL,	TIME_M
+	adc	ZH,	RMP2
 	lpm
 	mov	TPORTA,	R0
 ; potem godziny
-	ldi	ZH,		HIGH(h_D * 2)
-	ldi	ZL, 	LOW	(h_D * 2)
-	add	ZL,		TIME_H
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(h_D * 2)
+	ldi	ZL, 	LOW(h_D * 2)
+	add	ZL,	TIME_H
+	adc	ZH,	RMP2
 	lpm
 	or	TPORTD,	R0
 ;
-	ldi	ZH,		HIGH(h_C * 2)
-	ldi	ZL, 	LOW	(h_C * 2)
-	add	ZL,		TIME_H
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(h_C * 2)
+	ldi	ZL, 	LOW(h_C * 2)
+	add	ZL,	TIME_H
+	adc	ZH,	RMP2
 	lpm
 	or	TPORTC,	R0
 ;
-	ldi	ZH,		HIGH(h_B * 2)
-	ldi	ZL, 	LOW	(h_B * 2)
-	add	ZL,		TIME_H
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(h_B * 2)
+	ldi	ZL, 	LOW(h_B * 2)
+	add	ZL,	TIME_H
+	adc	ZH,	RMP2
 	lpm
 	or	TPORTB,	R0
 ;
-	ldi	ZH,		HIGH(h_A * 2)
-	ldi	ZL, 	LOW	(h_A * 2)
-	add	ZL,		TIME_H
-	adc	ZH,		RMP2
+	ldi	ZH,	HIGH(h_A * 2)
+	ldi	ZL, 	LOW(h_A * 2)
+	add	ZL,	TIME_H
+	adc	ZH,	RMP2
 	lpm
 	or	TPORTA,	R0
 ; synchronizacja ze stanem CLK
