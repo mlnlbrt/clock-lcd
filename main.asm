@@ -366,14 +366,14 @@ UPDATE_DIGITS:
 ; potem godziny
 	ldi	ZH,	HIGH(h_D * 2)
 	ldi	ZL, 	LOW(h_D * 2)
-	add	ZL,	TIME_M
+	add	ZL,	TIME_H
 	adc	ZH,	RMP2
 	lpm
 	mov	TPORTD,	R0
 ;
 	ldi	ZH,	HIGH(h_B * 2)
 	ldi	ZL, 	LOW(h_B * 2)
-	add	ZL,	TIME_M
+	add	ZL,	TIME_H
 	adc	ZH,	RMP2
 	lpm
 	mov	TPORTB,	R0
