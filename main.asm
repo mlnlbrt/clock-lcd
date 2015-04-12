@@ -40,26 +40,31 @@
 ;
 ; przypisanie portu i pinu sygnalu CLK ekranu
 .EQU CK_PORT	= PORTB
-.EQU CK_PIN	= PB1
+.EQU CK_PIN	= PB2
 ; przypisanie portu i pinu dwukropka
-.EQU C_PORT	= PORTD
-.EQU C_PIN	= PD4
+.EQU C_PORT	= PORTB
+.EQU C_PIN	= PB3
 ; ustawienia klawiatury
 .EQU BTN_PORT	= PORTB
 .EQU BTN_PIN	= PINB
-.EQU BTN_H	= PB7
+.EQU BTN_H	= PB5
 .EQU BTN_M	= PB6
-.EQU BTN_OPT	= PB5
 ; ponizej zdefiniowane jest I/O portow
-.EQU PORTA_IO	= 0b11111111
-.EQU PORTB_IO	= 0b00011111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!! (MAKRO?)
-.EQU PORTC_IO	= 0b11111111
-.EQU PORTD_IO	= 0b11111111
+.EQU PORTA_IO	= 0b01111111
+.EQU PORTB_IO	= 0b10011110 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!! (MAKRO?)
+.EQU PORTC_IO	= 0b01111111
+.EQU PORTD_IO	= 0b01111111
 ; tutaj podciagania 
-.EQU PORTA_CFG	= ~PORTA_IO
-.EQU PORTB_CFG	= ~PORTB_IO
-.EQU PORTC_CFG	= ~PORTC_IO
-.EQU PORTD_CFG	= ~PORTD_IO
+.EQU PORTA_CFG	= 0b00000000
+.EQU PORTB_CFG	= 0b01100000 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!! (MAKRO?)
+.EQU PORTC_CFG	= 0b00000000
+.EQU PORTD_CFG	= 0b00000000
+; maski uzywane przy taktowaniu ekranu, 1 na miejscach spiecia z ekranem
+.EQU PORTA_MASK	= 0b01111111
+.EQU PORTB_MASK	= 0b00011110 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!! (MAKRO?)
+.EQU PORTC_MASK	= 0b01111111
+.EQU PORTD_MASK	= 0b01111111
+
 ; ustawienia bitow flag
 .EQU UPDATE_REQ	= 0
 .EQU BTN_LOCK	= 1
@@ -68,6 +73,10 @@
 ;   P R Z Y P I S A N I A   R E J E S T R O W
 ; ============================================
 ;
+.DEF AMASK 	= R6
+.DEF BMASK 	= R7
+.DEF CMASK 	= R8
+.DEF DMASK 	= R9
 .DEF C_EOR	= R10
 .DEF TPORTA 	= R11
 .DEF TPORTB 	= R12
@@ -155,13 +164,10 @@ ISR_T0OVF:
 ; ****************
 ; pierwszy etap przerwania - odswiezanie wyswietlacza
 ; ****************
-	eor 	TPORTA, RMP
-	eor 	TPORTB, RMP
-	eor 	TPORTC, RMP
-	eor 	TPORTD, RMP
-; przywrocenie stanu pinow wejsciowych (klawisze) MAKRO!!!!!!!!!!
-	ldi	RMP,	PORTB_CFG
-	or	TPORTB,	RMP
+	eor 	TPORTA, AMASK
+	eor 	TPORTB, BMASK
+	eor 	TPORTC, CMASK
+	eor 	TPORTD, DMASK
 ; zaaktualizowanie portow 
 	out 	PORTA, 	TPORTA
 	out 	PORTB, 	TPORTB
@@ -179,7 +185,7 @@ ISR_T0OVF:
 ISR_T0OVF_SINCREASE:
 	inc 	TIME_S
 ; obsluga dwukropka - niezalezna od reszty segmentow MAKRO!!!!!!!!!!!!!
-	eor	TPORTD,	C_EOR
+	eor	TPORTB,	C_EOR
 	cpi	TIME_S,	60
 	brlo	ISR_T0OVF_END
 ; jesli licznik sekund byl rowny 60 to  
@@ -263,15 +269,24 @@ Main:
 	ldi 	RMP, 	(1 << SE) 
 	out 	MCUCR, 	RMP
 ; Wypelnienie rejestrow tymczasowych (porty) MAKRO!!!!!!
-	ldi 	RMP, 	0b11111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
+	ldi	RMP,	PORTA_MASK
+	mov 	AMASK, 	RMP
+	ldi	RMP,	PORTB_MASK
+	mov 	BMASK, 	RMP
+	ldi	RMP,	PORTC_MASK
+	mov 	CMASK, 	RMP
+	ldi	RMP,	PORTD_MASK
+	mov 	DMASK, 	RMP
+; zero tylko na miejscu CLK i pinow zwartych do masy
+	ldi 	RMP, 	0b01111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
 	mov 	TPORTA, RMP
-	ldi 	RMP, 	0b11111101 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
+	ldi 	RMP, 	0b01111010 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
 	mov 	TPORTB, RMP
-	ldi 	RMP, 	0b11111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
+	ldi 	RMP, 	0b01111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
 	mov 	TPORTC, RMP
-	ldi 	RMP, 	0b11111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
+	ldi 	RMP, 	0b01111111 ; POPRAWIC, JEST ZAKODOWANE NA STALE!!!
 	mov 	TPORTD, RMP
-; Wypelnienie ramu bajtami okreslajacymi konfiguracje
+; TODO: Wypelnienie ramu bajtami okreslajacymi konfiguracje
 ; portow mikrokontrolera dla konkretnych minut i godzin
 
 ; Zalaczenie przerwan, start programu
@@ -331,34 +346,16 @@ UPDATE_DIGITS:
 ; maksymalnie ~55 cykli wlacznie z ret
 ; ****************
 	cbr	FLAGS,	(1 << UPDATE_REQ)
-	ser	RMP
-;	synchronizacja ze stanem CLK
-	sbis	CK_PORT,CK_PIN
-	ldi	RMP,	0b00000000
 ;	wypelnienie bajtu zerami, potrzebne przy inkrementacjach adresu
 	ldi	RMP2,	0b00000000
 ;	wczytywanie bajtow definiujacych cyfry do rejestrow tymczasowych
 ;	najpierw minuty
-	ldi	ZH,	HIGH(m_D * 2)
-	ldi	ZL, 	LOW(m_D * 2)
-	add	ZL,	TIME_M
-	adc	ZH,	RMP2
-	lpm
-	mov	TPORTD,	R0
-;
 	ldi	ZH,	HIGH(m_C * 2)
 	ldi	ZL, 	LOW(m_C * 2)
 	add	ZL,	TIME_M
 	adc	ZH,	RMP2
 	lpm
 	mov	TPORTC,	R0
-;
-	ldi	ZH,	HIGH(m_B * 2)
-	ldi	ZL, 	LOW(m_B * 2)
-	add	ZL,	TIME_M
-	adc	ZH,	RMP2
-	lpm
-	mov	TPORTB,	R0
 ;
 	ldi	ZH,	HIGH(m_A * 2)
 	ldi	ZL, 	LOW(m_A * 2)
@@ -369,48 +366,38 @@ UPDATE_DIGITS:
 ; potem godziny
 	ldi	ZH,	HIGH(h_D * 2)
 	ldi	ZL, 	LOW(h_D * 2)
-	add	ZL,	TIME_H
+	add	ZL,	TIME_M
 	adc	ZH,	RMP2
 	lpm
-	or	TPORTD,	R0
-;
-	ldi	ZH,	HIGH(h_C * 2)
-	ldi	ZL, 	LOW(h_C * 2)
-	add	ZL,	TIME_H
-	adc	ZH,	RMP2
-	lpm
-	or	TPORTC,	R0
+	mov	TPORTD,	R0
 ;
 	ldi	ZH,	HIGH(h_B * 2)
 	ldi	ZL, 	LOW(h_B * 2)
-	add	ZL,	TIME_H
+	add	ZL,	TIME_M
 	adc	ZH,	RMP2
 	lpm
-	or	TPORTB,	R0
-;
-	ldi	ZH,	HIGH(h_A * 2)
-	ldi	ZL, 	LOW(h_A * 2)
-	add	ZL,	TIME_H
-	adc	ZH,	RMP2
-	lpm
-	or	TPORTA,	R0
+	mov	TPORTB,	R0
 ; synchronizacja ze stanem CLK
-	eor	TPORTD, RMP
-	eor	TPORTC, RMP
-	eor	TPORTB, RMP
-	eor	TPORTA, RMP
+	sbis	CK_PORT,CK_PIN
+	rjmp	UPDATE_DIGITS_COLON
+; synchronizacja ze stanem CLK
+	eor	TPORTD, DMASK
+	eor	TPORTC, CMASK
+	eor	TPORTB, BMASK
+	eor	TPORTA, AMASK
 ; przywrocenie stanu dwukropka
+UPDATE_DIGITS_COLON:
 	sbrc	TIME_S,	0
 	rjmp	UPDATE_DIGITS_END
 	sbrc	TPORTB,	CK_PIN ; MAKRO!!!!!!!!!!
 	rjmp	UPDATE_DIGITS_END
-	or	TPORTD,	C_EOR ; MAKRO!!!!!!!!!!
+	or	TPORTB,	C_EOR ; MAKRO!!!!!!!!!!
 UPDATE_DIGITS_END:
-; przywrocenie stanu pinow wejsciowych (klawisze) MAKRO!!!!!!!!!!
+; przywrocenie stanu klawiszy
 	ldi	RMP,	PORTB_CFG
 	or	TPORTB,	RMP
 	ret
 ; ****************
 ;
-; EOF main.S
+; EOF main.asm
 ;
